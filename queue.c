@@ -36,10 +36,14 @@ void q_free(struct list_head *head)
 bool q_insert_head(struct list_head *head, char *s)
 {
     element_t *new_element_t = malloc(sizeof(element_t));
+    if (!new_element_t)
+        return false;
+
     new_element_t->value = strdup(s);  // need to free it when delete head
-    // if (!new_element_t) {
-    //     return false;
-    // }
+    if (!new_element_t->value) {
+        free(new_element_t);
+        return false;
+    }
 
     list_add(&(new_element_t->list), head);
 
@@ -50,7 +54,15 @@ bool q_insert_head(struct list_head *head, char *s)
 bool q_insert_tail(struct list_head *head, char *s)
 {
     element_t *new_element_t = malloc(sizeof(element_t));
+    if (!new_element_t)
+        return false;
+
     new_element_t->value = strdup(s);
+    if (!new_element_t->value) {
+        free(new_element_t);
+        return false;
+    }
+
     list_add_tail(&(new_element_t->list), head);
 
     return true;
