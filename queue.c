@@ -112,6 +112,45 @@ int q_size(struct list_head *head)
     return len;
 }
 
+
+struct list_head *getmid(struct list_head *head)
+{
+    struct list_head *forward, *backward = head->prev;
+    list_for_each (forward, head) {
+        if ((forward->next == backward) || (forward == backward)) {
+            break;
+        }
+        backward = backward->prev;
+    }
+    return forward;
+}
+
+struct list_head *merge_two_lists(struct list_head *left,
+                                  struct list_head *right,
+                                  bool descend)
+{
+    if (list_empty(left))
+        return right;
+    if (list_empty(right))
+        return left;
+
+    LIST_HEAD(temphead);
+    while (!list_empty(left) && !list_empty(right)) {
+        element_t *l = list_first_entry(left, element_t, list);
+        element_t *r = list_first_entry(right, element_t, list);
+        if ((descend && strcmp(l->value, r->value) > 0) ||
+            (!descend && strcmp(l->value, r->value) <= 0))
+            list_move_tail(&l->list, &temphead);
+        else
+            list_move_tail(&r->list, &temphead);
+    }
+    list_splice_tail_init(left, &temphead);
+    list_splice_tail_init(right, &temphead);
+    list_splice(&temphead, left);
+    return left;
+}
+
+// https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
 /* Delete the middle node in queue */
 bool q_delete_mid(struct list_head *head)
 {
@@ -142,7 +181,40 @@ void q_reverseK(struct list_head *head, int k)
 }
 
 /* Sort elements of queue in ascending/descending order */
-void q_sort(struct list_head *head, bool descend) {}
+void q_sort(struct list_head *head, bool descend)
+{
+    if (list_empty(head) || list_is_singular(head))
+        return;
+
+    struct list_head *mid = getmid(head);
+    if (!mid)
+        return;
+
+    LIST_HEAD(lefthead);
+    list_cut_position(&lefthead, head, mid);
+
+    q_sort(&lefthead, descend);
+    q_sort(head, descend);
+    // struct list_head *merged = merge_two_lists(lh, head, descend);
+    // split to two queue
+
+    struct list_head *merged = merge_two_lists(&lefthead, head, descend);
+    // head = merged;
+    INIT_LIST_HEAD(head);
+    list_splice_tail(merged, head);
+}
+// use q_merge() to sort
+// {
+//     struct list_head *node;
+//     list_for_each(node, head) {
+//         queue_contex_t *newcon = malloc(sizeof(queue_contex_t));
+
+//     }
+
+
+// }
+
+
 
 /* Remove every node which has a node with a strictly less value anywhere to
  * the right side of it */
