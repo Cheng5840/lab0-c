@@ -407,17 +407,80 @@ void q_sort(struct list_head *head, bool descend)
 /* Remove every node which has a node with a strictly less value anywhere to
  * the right side of it */
 int q_ascend(struct list_head *head)
+// {
+//     if (!head || list_empty(head) || list_is_singular(head))
+//         return 0;
+//     //SO C90 forbids variable length array ‘stack’
+//     struct list_head* stack[2000];
+//     stack[0] = head;
+//     int top = 0;
+//     struct list_head* cur = head->next;
+
+//     while (cur!=head) {
+
+//         while (top > 0 && strcmp(list_entry(cur, element_t, list)->value,
+//         list_entry(stack[top], element_t, list)->value)<0 ){
+//             element_t *elem = list_entry(stack[top], element_t, list);
+//             q_release_element(elem);
+//             top --;
+//         }
+//         cur->prev = stack[top];
+//         stack[top]->next = cur;
+//         top ++;
+//         stack[top] = cur;
+//         cur = cur->next;
+//     }
+
+//     return q_size(head);
+// }
+/* start from the tail, and move backward, everytime the cur node being less
+than min, we change min to cur node;
+we delete the node. Finally return the size of list*/
 {
-    // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    if (!head || list_empty(head) || list_is_singular(head))
+        return 0;
+
+    struct list_head *cur = head->prev;
+    char *minstr = list_entry(cur, element_t, list)->value;
+    struct list_head *prev;
+    while (cur != head) {
+        prev = cur->prev;
+        element_t *curele = list_entry(cur, element_t, list);
+        if (strcmp(curele->value, minstr) <= 0) {
+            minstr = curele->value;
+        } else {
+            list_del(cur);
+            q_release_element(curele);
+        }
+
+        cur = prev;
+    }
+    return q_size(head);
 }
 
 /* Remove every node which has a node with a strictly greater value anywhere to
  * the right side of it */
 int q_descend(struct list_head *head)
 {
-    // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    if (!head || list_empty(head) || list_is_singular(head))
+        return 0;
+
+    struct list_head *cur = head->prev;
+    char *minstr = list_entry(cur, element_t, list)->value;
+    struct list_head *prev;
+    while (cur != head) {
+        prev = cur->prev;
+        element_t *curele = list_entry(cur, element_t, list);
+        if (strcmp(curele->value, minstr) >= 0) {
+            minstr = curele->value;
+        } else {
+            list_del(cur);
+            q_release_element(curele);
+        }
+
+        cur = prev;
+    }
+    return q_size(head);
 }
 
 /* Merge all the queues into one sorted queue, which is in ascending/descending
