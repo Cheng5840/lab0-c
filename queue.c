@@ -153,8 +153,26 @@ struct list_head *merge_two_lists(struct list_head *left,
 // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
 /* Delete the middle node in queue */
 bool q_delete_mid(struct list_head *head)
+// {
+//     struct list_head *fast = head;
+//     struct list_head *slow;
+//     list_for_each (slow, head) {
+//         fast = fast->next->next;
+//         if ((fast->next == head) || (fast == head)) {
+//             break;
+//         }
+//     }
+//     list_del(slow);
+//     element_t *ele_deleted = list_entry(slow, element_t, list);
+//     q_release_element(ele_deleted);
+
+//     return true;
+// }
 {
-    // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
+    struct list_head *mid = getmid(head);
+    list_del(mid);
+    q_release_element(list_entry(mid, element_t, list));
+
     return true;
 }
 
