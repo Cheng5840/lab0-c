@@ -216,8 +216,70 @@ bool q_delete_dup(struct list_head *head)
 
 /* Swap every two adjacent nodes */
 void q_swap(struct list_head *head)
+// {
+//     if (head->next == head || head->next->next == head)
+//         return;
+
+//     struct list_head *newHead = head->next->next;
+//     struct list_head *cur = head->next;
+//     struct list_head *prev = head;
+
+//     while (cur != head && cur->next != head) {
+//         struct list_head *nextPair = cur->next->next;
+//         struct list_head *second = cur->next;
+
+//         second->next = cur;
+//         cur->prev = second;
+//         cur->next = nextPair;
+//         nextPair->prev = cur;
+
+//         prev->next = second;
+//         second->prev = prev;
+
+//         prev = cur;
+//         cur = nextPair;
+//     }
+//     head->next = newHead;
+//     newHead->prev = head;
+// }
+/*treat swap sa special case when K = 2*/
+// {
+//     q_reverseK(head, 2);
+// }
+// {
+//     if (list_empty(head) || list_is_singular(head))
+//         return;
+
+//     struct list_head *cur = head->next;
+//     struct list_head *nextpair;
+//     while (cur != head && cur->next != head) {
+//         nextpair = cur->next->next;
+
+//         // 交換節點 cur 和 cur->next
+//         cur->prev->next = cur->next;
+//         cur->next->prev = cur->prev;
+
+//         cur->next->next = cur;
+//         cur->prev = cur->next;
+
+//         cur->next = nextpair;
+//         nextpair->prev = cur;
+
+//         cur = nextpair;
+//     }
+// }
 {
-    // https://leetcode.com/problems/swap-nodes-in-pairs/
+    if (list_empty(head) || list_is_singular(head))
+        return;
+
+    struct list_head *cur = head->next, *nextpair;
+
+
+    while (cur != head && cur->next != head) {
+        nextpair = cur->next->next;
+        list_move(cur, cur->next);
+        cur = nextpair;
+    }
 }
 
 /* Reverse elements in queue */
