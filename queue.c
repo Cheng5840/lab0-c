@@ -441,8 +441,9 @@ we delete the node. Finally return the size of list*/
         return 0;
 
     struct list_head *cur = head->prev;
-    char *minstr = list_entry(cur, element_t, list)->value;
+    char *minstr = list_last_entry(head, element_t, list)->value;
     struct list_head *prev;
+
     while (cur != head) {
         prev = cur->prev;
         element_t *curele = list_entry(cur, element_t, list);
