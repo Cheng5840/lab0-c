@@ -4,6 +4,14 @@
 
 #include "queue.h"
 
+/* Notice: sometimes, Cppcheck would find the potential NULL pointer bugs,
+ * but some of them cannot occur. You can suppress them by adding the
+ * following line.
+ *   cppcheck-suppress nullPointer
+ */
+
+
+
 /* Create an empty queue */
 struct list_head *q_new()
 {
@@ -368,6 +376,7 @@ void q_reverseK(struct list_head *head, int k)
     }
 }
 
+
 /* Sort elements of queue in ascending/descending order */
 void q_sort(struct list_head *head, bool descend)
 {
@@ -406,6 +415,7 @@ void q_sort(struct list_head *head, bool descend)
 
 /* Remove every node which has a node with a strictly less value anywhere to
  * the right side of it */
+// https://leetcode.com/problems/remove-nodes-from-linked-list/
 int q_ascend(struct list_head *head)
 // {
 //     if (!head || list_empty(head) || list_is_singular(head))
@@ -484,6 +494,9 @@ int q_descend(struct list_head *head)
     return q_size(head);
 }
 
+
+
+// https://leetcode.com/problems/merge-k-sorted-lists/
 /* Merge all the queues into one sorted queue, which is in ascending/descending
  * order */
 int q_merge(struct list_head *head, bool descend)
@@ -513,4 +526,28 @@ int q_merge(struct list_head *head, bool descend)
     }
 
     return q_size(list_entry(head->next, queue_contex_t, chain)->q);
+}
+
+
+void q_shuffle(struct list_head *head)
+{
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+    int len = q_size(head);
+    struct list_head *tail = head->prev;
+    while (len) {
+        int random = rand() % len;
+        struct list_head *chosen = head->next;
+        for (int i = 0; i < random; i++) {
+            chosen = chosen->next;
+        }
+        element_t *old_element = list_entry(chosen, element_t, list);
+        element_t *new_element = list_entry(tail, element_t, list);
+        char *temp = old_element->value;
+        old_element->value = new_element->value;
+        new_element->value = temp;
+
+        tail = tail->prev;
+        len--;
+    }
 }

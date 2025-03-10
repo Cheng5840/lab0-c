@@ -85,6 +85,23 @@ typedef enum {
 } position_t;
 /* Forward declarations */
 static bool q_show(int vlevel);
+/**
+ * q_shuffle() - Randomly shuffle the elements in the queue.
+ * @head: header of the queue
+ *
+ * This function randomly rearranges the elements in the queue to achieve
+ * a shuffled order. It iterates through the queue, selecting a random
+ * node and swapping its value with the last unshuffled node.
+ *
+ * The function operates in O(n) time complexity, where n is the number
+ * of elements in the queue. It does not allocate or deallocate memory;
+ * it only modifies the values stored in the elements.
+ *
+ * No effect if the queue is empty or has only one element.
+ *
+ * Return: None.
+ */
+void q_shuffle(struct list_head *head);
 
 static bool do_free(int argc, char *argv[])
 {
@@ -913,6 +930,29 @@ static bool do_merge(int argc, char *argv[])
     return ok && !error_check();
 }
 
+static bool do_shuffle(int argc, char *argv[])
+{
+    if (argc != 1) {
+        report(1, "%s takes no arguments", argv[0]);
+        return false;
+    }
+
+    if (!current || !current->q) {
+        report(3, "Warning: Calling shuffle on null queue");
+        return false;
+    }
+    error_check();
+
+    set_noallocate_mode(true);
+    if (exception_setup(true))
+        q_shuffle(current->q);
+    exception_cancel();
+    set_noallocate_mode(false);
+
+    q_show(3);
+    return !error_check();
+}
+
 static bool is_circular()
 {
     struct list_head *cur = current->q->next;
@@ -1096,6 +1136,8 @@ static void console_init()
                 "");
     ADD_COMMAND(reverseK, "Reverse the nodes of the queue 'K' at a time",
                 "[K]");
+    ADD_COMMAND(shuffle, "Randomly shuffle the queue", "");
+
     add_param("length", &string_length, "Maximum length of displayed string",
               NULL);
     add_param("malloc", &fail_probability, "Malloc failure probability percent",
